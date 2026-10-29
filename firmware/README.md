@@ -133,6 +133,8 @@ reset (the stock picoprobe firmware does the same). Leave that port idle, or use
 
 ## Not done yet
 
+- Tested so far: WCH mode on a Raspberry Pi Pico (picoprobe PCB, 1k SWIO pull-up). The other modes
+  and the tinyLINK rev A board are untested.
 - USB VID/PID is the pid.codes test pair 1209:0001; a public release needs its own PID (free from
   pid.codes for open hardware).
 - Not implemented: WCH RVSWD (CH32V2xx/V3xx/X0), SWO, dirtyJTAG, UART CTS/RTS flow control, LA RLE
