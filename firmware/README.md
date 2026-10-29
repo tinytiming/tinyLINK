@@ -59,6 +59,9 @@ open-drain.
 - **WCH:** SWIO for CH32V003/V00x with PicoRVD's PIO program, speaking minichlink's "ardulink" serial
   protocol. That's one USB round trip per debug register access: slower than a WCH-LinkE, fine for
   16 KB parts. minichlink's power on/off maps to target power, so it can power-cycle a locked chip.
+  The probe only pulls SWIO low or releases it, so the line relies on pull-ups (about 1k to the
+  target's 3.3 V is recommended); see the
+  [SWIO pull-up note](../hardware/README.md#open-questions-for-future-revisions).
 - **UPDI:** PIO open-drain half-duplex UART on IO1. The probe echoes its own bytes like the resistor
   SerialUPDI adapter, follows the host's baud rate, parity and stop bits (including pymcuprog's
   300-baud double break) and handles a CDC break.
@@ -88,6 +91,8 @@ picotool, cmake downloads and builds one (set `picotool_DIR` to avoid that).
 
 `cmake .. -DLED_ORDER_RGB=ON` for RP2040-Zero LEDs that take R,G,B instead of the usual G,R,B.
 
+CI builds both UF2s (RP2040-Zero and Pico) on every push; tagged releases (`v*`) attach them.
+
 ## Raspberry Pi Pico / picoprobe PCB
 
 The same firmware runs on a plain Raspberry Pi Pico, for example on the
@@ -105,8 +110,8 @@ make -C build-pico -j8
 - **VTREF:** the picoprobe PCB routes VTREF to Pico pin 34 (GP28), not to 3V3. The firmware reads it
   on ADC2 (no divider) as VTGT for `status`, minichlink's power check and avrdude's VTARGET, and
   never drives GP28.
-- **SWIO / UPDI:** IO1 only has the RP2040's internal pull-up here, see the SWIO pull-up note in
-  [`../hardware/README.md`](../hardware/README.md#open-questions-for-future-revisions).
+- **SWIO / UPDI:** IO1 only has the RP2040's internal pull-up here. Add 1k from SWDIO (GP3) to 3V3
+  for WCH SWIO; WCH flashing was tested with that pull-up fitted.
 
 IO0-IO3 (GP2-GP5) land on the picoprobe header. The rest are only on the Pico's own pins
 (GP6 = pin 9, GP7 = pin 10, GP8 = pin 11, GP9 = pin 12), for a flying lead:

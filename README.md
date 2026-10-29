@@ -26,5 +26,14 @@ until you solder its centre pad to 3v3 or to 5v, never both. See
   (JLC gerbers, BOM, CPL) in `revA/fab/`.
 - [`firmware/`](firmware/README.md): Pico SDK firmware, usage and build.
 
+**Raspberry Pi Pico:** the same firmware also runs on a plain Pico, including on the
+[picoprobe PCB](https://github.com/Fabien-Chouteau/picoprobe-pcb): 3.3 V targets only, no power
+switch or level shifter. CI builds `tinylink-rp2040-zero.uf2` and `tinylink-pico.uf2`. See
+[Raspberry Pi Pico / picoprobe PCB](firmware/README.md#raspberry-pi-pico--picoprobe-pcb).
+
+**WCH SWIO pull-up:** SWIO wants about 1k to the target's 3.3 V. The probe only pulls the line low or
+releases it, and rev A has no pull-up fitted; see the
+[open question](hardware/README.md#open-questions-for-future-revisions).
+
 MIT licence ([`LICENSE`](LICENSE)). Third-party parts keep their own licences: see
 [firmware licences](firmware/README.md#licences) and `hardware/RP2040-Zero-Kicad-Fixed`.
