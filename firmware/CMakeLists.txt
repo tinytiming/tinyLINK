@@ -40,6 +40,11 @@ option(LED_ORDER_RGB "RP2040-Zero LED takes R,G,B order instead of G,R,B" OFF)
 if(LED_ORDER_RGB)
   target_compile_definitions(tinylink PRIVATE LED_ORDER_RGB=1)
 endif()
+
+# -DPICO_BOARD=pico: a plain Raspberry Pi Pico, e.g. on the picoprobe PCB.
+if(PICO_BOARD STREQUAL "pico")
+  target_compile_definitions(tinylink PRIVATE TINYLINK_BOARD_PICO=1)
+endif()
 target_compile_options(tinylink PRIVATE -Wall -Wextra -Wno-unused-parameter)
 
 target_link_libraries(tinylink

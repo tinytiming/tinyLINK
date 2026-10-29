@@ -1,8 +1,69 @@
-// Mode colour on the RP2040-Zero WS2812, plus short blink patterns.
+// Mode colour on the RP2040-Zero WS2812, plus short blink patterns. On a
+// plain Pico the single LED blinks the mode number instead.
 #include "pico/stdlib.h"
-#include "hardware/pio.h"
 #include "board.h"
 #include "led.h"
+
+#if TINYLINK_BOARD_PICO
+
+#include "modes.h"
+
+#define MODE_ON_MS      150
+#define MODE_OFF_MS     250
+#define MODE_PERIOD_MS  2000
+#define FLICKER_MS      60
+
+static int step;                 // mode pattern: 2 steps per blink, then the pause
+static absolute_time_t step_next;
+static int blink_left;           // flicker half-periods remaining
+static absolute_time_t blink_next;
+
+void led_init(void) {
+  gpio_init(PIN_LED);
+  gpio_set_dir(PIN_LED, GPIO_OUT);
+  gpio_put(PIN_LED, 0);
+}
+
+void led_set(uint32_t rgb) {
+  step = 0;
+  step_next = get_absolute_time();
+}
+
+void led_blink(uint32_t rgb, int count) {
+  blink_left = count * 2;
+  blink_next = get_absolute_time();
+}
+
+void led_task(void) {
+  absolute_time_t now = get_absolute_time();
+  if (blink_left) {
+    if (absolute_time_diff_us(blink_next, now) < 0)
+      return;
+    blink_left--;
+    gpio_put(PIN_LED, blink_left & 1);
+    blink_next = make_timeout_time_ms(FLICKER_MS);
+    if (!blink_left)
+      led_set(0);
+    return;
+  }
+  if (absolute_time_diff_us(step_next, now) < 0)
+    return;
+  int n = mode_current + 1;
+  if (step < 2 * n) {
+    bool on = !(step & 1);
+    gpio_put(PIN_LED, on);
+    step_next = make_timeout_time_ms(on ? MODE_ON_MS : MODE_OFF_MS);
+    step++;
+  } else {
+    gpio_put(PIN_LED, 0);
+    step_next = make_timeout_time_ms(MODE_PERIOD_MS - n * (MODE_ON_MS + MODE_OFF_MS));
+    step = 0;
+  }
+}
+
+#else
+
+#include "hardware/pio.h"
 #include "ws2812.pio.h"
 
 // G,R,B, the usual RP2040-Zero order. Some RP2040-Zero batches
@@ -68,3 +129,5 @@ void led_task(void) {
   if (!blink_left)
     put(base_rgb);
 }
+
+#endif

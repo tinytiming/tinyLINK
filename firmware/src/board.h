@@ -8,11 +8,19 @@
 #define PIN_IO(n)       (PIN_IO_BASE + (n))
 #define IO_COUNT        8u
 
+#if TINYLINK_BOARD_PICO
+// Raspberry Pi Pico: plain LED, no level shifter or power switch. The picoprobe
+// PCB wires VTREF straight to GP28 (3.3 V targets only, so no divider).
+#define PIN_LED         25u
+#define PIN_VTREF_SENSE 28u
+#define ADC_VTREF       2u
+#else
 #define PIN_SHIFT_OE    10u   // U2 OE, R14 pull-down
 #define PIN_TPWR_EN     14u   // Q3 gate: target power on
 #define PIN_WS2812      16u   // on the RP2040-Zero module
 #define PIN_VTGT_SENSE  26u   // VTGT/2 (R12/R13 100k/100k)
 #define ADC_VTGT        0u
+#endif
 
 // Per-mode channel names, see hardware/README.md "Channels".
 #define PIN_SWCLK       PIN_IO(0)

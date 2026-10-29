@@ -88,6 +88,44 @@ picotool, cmake downloads and builds one (set `picotool_DIR` to avoid that).
 
 `cmake .. -DLED_ORDER_RGB=ON` for RP2040-Zero LEDs that take R,G,B instead of the usual G,R,B.
 
+## Raspberry Pi Pico / picoprobe PCB
+
+The same firmware runs on a plain Raspberry Pi Pico, for example on the
+[picoprobe PCB](https://github.com/Fabien-Chouteau/picoprobe-pcb):
+
+```sh
+cmake -B build-pico -DPICO_BOARD=pico -DPICO_SDK_PATH=$PICO_SDK_PATH
+make -C build-pico -j8
+```
+
+- **LED (GP25):** blinks the mode number (1-8) every 2 s; a fast flicker for power on/off, faults
+  and refusals.
+- **No level shifter or power switch:** 3.3 V targets only, powered by themselves. `power on` is
+  refused.
+- **VTREF:** the picoprobe PCB routes VTREF to Pico pin 34 (GP28), not to 3V3. The firmware reads it
+  on ADC2 (no divider) as VTGT for `status`, minichlink's power check and avrdude's VTARGET, and
+  never drives GP28.
+- **SWIO / UPDI:** IO1 only has the RP2040's internal pull-up here, see the SWIO pull-up note in
+  [`../hardware/README.md`](../hardware/README.md#open-questions-for-future-revisions).
+
+IO0-IO3 (GP2-GP5) land on the picoprobe header. The rest are only on the Pico's own pins
+(GP6 = pin 9, GP7 = pin 10, GP8 = pin 11, GP9 = pin 12), for a flying lead:
+
+| Picoprobe signal (J1 / J2 pin) | GPIO | SWD | WCH | UPDI | UART | LA | SPI | JTAG | ISP |
+|---|---|---|---|---|---|---|---|---|---|
+| SWDCLK (2 / 4) | GP2 | SWCLK | | | | D2 | SCK | TCK | SCK |
+| SWDIO (4 / 2) | GP3 | SWDIO | SWIO | UPDI | | D3 | MOSI | TMS | MOSI |
+| ~TRST (5 / 10) | GP4 | TX | TX | TX | TX | D4 | MISO | TX | MISO |
+| SWO (6 / 6) | GP5 | RX | RX | RX | RX | D5 | CS | RX | |
+| Pico pin 9 | GP6 | nRESET | | | EN | D6 | | nSRST | RESET |
+| Pico pin 10 | GP7 | | | | BOOT | D7 | | TDO | |
+| Pico pin 11 | GP8 | | | | | D8 | | TDI | |
+| Pico pin 12 | GP9 | | | | | D9 | | | |
+
+GND is J1 pin 3, or J2 pins 3/5. On J2, pin 10 is normally the target's nRESET, and in SWD/JTAG/WCH/
+UPDI modes it carries the target UART TX: anything sent on the target-UART port then pulses the
+reset (the stock picoprobe firmware does the same). Leave that port idle, or use J1.
+
 ## Not done yet
 
 - USB VID/PID is the pid.codes test pair 1209:0001; a public release needs its own PID (free from

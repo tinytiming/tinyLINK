@@ -8,6 +8,31 @@
 #include "led.h"
 #include "power.h"
 
+#if TINYLINK_BOARD_PICO
+
+// A plain Pico has no power switch or level shifter; VTGT is read straight
+// from VTREF on GP28.
+void power_init(void) {
+  adc_init();
+  adc_gpio_init(PIN_VTREF_SENSE);
+  adc_select_input(ADC_VTREF);
+}
+
+void power_task(void) {}
+const char *power_set(bool on) { return on ? "no target power switch on this board" : NULL; }
+bool power_wait_on(uint32_t timeout_ms) { return false; }
+bool power_is_on(void) { return false; }
+bool power_shifter_on(void) { return false; }
+
+int power_vtgt_mv(void) {
+  uint32_t sum = 0;
+  for (int i = 0; i < 4; i++)
+    sum += adc_read();
+  return (int)(sum * 3300u / (4u * 4096u));
+}
+
+#else
+
 #define POWER_ON_TIMEOUT_MS 20     // R9/R10/C3 soft start, then F1 + C4
 #define POWER_GOOD_MV       2800   // either JP9 rail (3V3 or 5V) clears this
 #define POWER_SAG_MV        2500
@@ -120,3 +145,5 @@ bool power_wait_on(uint32_t timeout_ms) {
     power_task();
   return state == PWR_ON;
 }
+
+#endif
