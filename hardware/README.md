@@ -78,6 +78,40 @@ Never close JP1-JP8 with U2 fitted. In this build the IOs are driven straight fr
 3.3 V, so the target must run at 3.3 V or have 3.3 V-tolerant inputs: never use it on 5 V targets,
 nor on targets below ~3 V unless their inputs tolerate 3.3 V.
 
+### Target power jumper (JP9)
+
+The 3V3 / 5V selector is JP9, a 3-pad solder jumper on the front. The silk doesn't say "JP9": look for
+the "3v3" and "5v" labels with arrows pointing down at it. It sits at the right-hand edge, just below
+the bottom-right corner of the RP2040-Zero, between U2 (the TSSOP-20) and the SWD connector J1. A small
+triangle under the left pad marks pin 1.
+
+- **Ships open:** the probe gives the target no power until you bridge it.
+- **3V3:** solder the centre pad to the left pad, under "3v3" (pins 1-2, the module's LDO).
+- **5V:** solder the centre pad to the right pad, under "5v" (pins 2-3, USB VBUS).
+- **Never bridge all three:** that shorts the module's 3V3 to USB 5V.
+- Target power switching (BOOT long-press, or `power on` on the console) only works with JP9 bridged.
+  With it open, VTGT has to come from a self-powered target.
+
+### Solder jumpers
+
+The eight bypass jumpers JP1-JP8 sit on the back in one row under the "lvl shifter bypass" text,
+between the U-slot and J4. They have no per-channel labels, so here is the map. Seen from the back,
+left to right (the last one, JP8, sits slightly higher, next to the "UART" label):
+
+| Jumper | Bridges | Close for |
+|--------|---------|-----------|
+| JP1 | IO0_A - IO0_B (GP2) | 3.3 V-only build |
+| JP2 | IO1_A - IO1_B (GP3) | 3.3 V-only build |
+| JP3 | IO2_A - IO2_B (GP4) | 3.3 V-only build |
+| JP4 | IO3_A - IO3_B (GP5) | 3.3 V-only build |
+| JP5 | IO4_A - IO4_B (GP6) | 3.3 V-only build |
+| JP6 | IO5_A - IO5_B (GP7) | 3.3 V-only build |
+| JP7 | IO6_A - IO6_B (GP8) | 3.3 V-only build |
+| JP8 | IO7_A - IO7_B (GP9) | 3.3 V-only build |
+| JP9 | VSRC to 3V3 (1-2) or 5V (2-3), front, "3v3 / 5v" | target power source, ships open |
+
+Close all eight together, and only with U2 unfitted.
+
 ## Target power (VTGT)
 
 VTGT is both the target supply out and U2's B-side reference in.

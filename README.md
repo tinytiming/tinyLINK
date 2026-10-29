@@ -19,6 +19,10 @@ The I/O is level-shifted for 3.1-5.5 V targets, and target power is switchable.
 
 The BOOT button cycles modes, and the module's WS2812 shows the mode colour.
 
+**Target power jumper:** JP9 (the "3v3 / 5v" pads on the front, right edge, below the module) ships
+open, so the probe gives no target power until you solder its centre pad to 3v3 or to 5v, never both.
+See [`hardware/README.md`](hardware/README.md#target-power-jumper-jp9).
+
 ## Layout
 
 - [`hardware/`](hardware): KiCad 10 project (schematic, PCB, project libraries), the schematic PDF,
