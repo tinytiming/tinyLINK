@@ -82,3 +82,13 @@ fault handling): [`../firmware/README.md`](../firmware/README.md#using-it).
 - On probe-supplied 3V3 the drop across F1 (0.1-0.8 ohm) and Q1/Q2 (~2 x 60 mOhm) eats into the
   level-shifter margin: keep 3V3-powered targets to roughly 100-200 mA, or use 5V or a self-powered
   target for more.
+
+## Open questions for future revisions
+
+- **SWIO pull-up (WCH mode).** Rev A has no external pull-up on IO1. WCH SWIO wants about 1k to the
+  target supply (PicoRVD uses 1k to 3.3 V). With U2 fitted, the TXS0108E's own ~4k pull-up and edge
+  accelerators may be enough (untested). In the 3.3 V-only build (U2 unfitted, JP1-JP8 closed) only
+  the RP2040's ~50k internal pull-up remains, which is likely too weak. Rev A workaround for that
+  build: fit 1k-4.7k from J3 pin 7 (IO1) to J3 pin 1 (VTGT). Options for rev B: a DNP 0603 pull-up
+  from IO1 to VTGT for the 3.3 V-only build only (never with U2 fitted), and/or firmware that drives
+  SWIO high during host phases and releases it only in the target's reply window.
