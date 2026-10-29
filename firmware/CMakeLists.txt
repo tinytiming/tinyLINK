@@ -35,6 +35,11 @@ pico_generate_pio_header(tinylink ${CMAKE_CURRENT_LIST_DIR}/src/swio.pio)
 pico_generate_pio_header(tinylink ${CMAKE_CURRENT_LIST_DIR}/src/la.pio)
 
 target_include_directories(tinylink PRIVATE src third_party/free-dap)
+
+option(LED_ORDER_RGB "RP2040-Zero LED takes R,G,B order instead of G,R,B" OFF)
+if(LED_ORDER_RGB)
+  target_compile_definitions(tinylink PRIVATE LED_ORDER_RGB=1)
+endif()
 target_compile_options(tinylink PRIVATE -Wall -Wextra -Wno-unused-parameter)
 
 target_link_libraries(tinylink

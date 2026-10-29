@@ -6,7 +6,7 @@
 #include "ws2812.pio.h"
 
 // G,R,B, the usual RP2040-Zero order. Some RP2040-Zero batches
-// are reported to be R,G,B: build with -DLED_ORDER_RGB=1 if red and green swap.
+// are reported to be R,G,B: configure with -DLED_ORDER_RGB=ON if red and green swap.
 #ifndef LED_ORDER_RGB
 #define LED_ORDER_RGB 0
 #endif
