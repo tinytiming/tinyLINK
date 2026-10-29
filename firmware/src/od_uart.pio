@@ -1,0 +1,29 @@
+; Open-drain half-duplex UART on one pin (UPDI). TX drives the pin low for
+; 0 bits and releases it for 1 bits; RX samples the same pin, so every byte
+; sent is also received, like the SerialUPDI resistor circuit expects.
+; 8 PIO cycles per bit for both machines.
+
+.program od_uart_tx
+; Each word: (inverted frame bits << 4) | (frame length - 1), LSB first.
+; pindir 1 = drive low (output latch is 0), 0 = release.
+.wrap_target
+    pull block
+    out x, 4
+bitloop:
+    out pindirs, 1 [6]
+    jmp x-- bitloop
+.wrap
+
+.program od_uart_rx
+; Y = data bits (incl. parity) - 1, preloaded with exec.
+start:
+    wait 0 pin 0
+    mov x, y [10]       ; to the middle of the first data bit
+bitloop:
+    in pins, 1
+    jmp x-- bitloop [6]
+    jmp pin good_stop
+    wait 1 pin 0        ; framing error or break: drop it
+    jmp start
+good_stop:
+    push noblock

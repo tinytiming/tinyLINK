@@ -1,0 +1,10 @@
+build/
+.DS_Store
+
+# KiCad
+*.lck
+*-backups/
+hardware/backups/
+fp-info-cache
+_autosave-*
+\#auto_saved_files#

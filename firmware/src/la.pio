@@ -1,0 +1,6 @@
+; Logic analyser sampler: one 8-bit sample of IO0-IO7 per PIO cycle,
+; four samples per 32-bit autopush.
+.program la
+.wrap_target
+    in pins, 8
+.wrap

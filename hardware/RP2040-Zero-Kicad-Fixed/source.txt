@@ -1,0 +1,1 @@
+git@github.com:harshitgoel96/RP2040-Zero-Kicad-Fixed.git

@@ -1,0 +1,6 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "RP2040-Zero") (type "KiCad") (uri "${KIPRJMOD}/RP2040-Zero-Kicad-Fixed/RP2040-Zero.pretty") (options "") (descr "Waveshare RP2040-Zero castellated footprint"))
+	(lib (name "EasyEDA") (type "KiCad") (uri "${KIPRJMOD}/EasyEDA.pretty") (options "") (descr "EasyEDA SOT-23 footprints for AO3401A / BSS138, copied from pcb-wireless-bridge"))
+	(lib (name "tinylink") (type "KiCad") (uri "${KIPRJMOD}/tinylink.pretty") (options "") (descr ""))
+)
