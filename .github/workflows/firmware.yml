@@ -4,9 +4,9 @@ on:
   push:
     branches: ["**"]
     tags: ["v*"]
-    paths: ["firmware/**", ".github/workflows/firmware.yml"]
+    paths: ["firmware/**", ".github/workflows/firmware.yml", "!firmware/**/*.md", "!firmware/**/.gitignore"]
   pull_request:
-    paths: ["firmware/**", ".github/workflows/firmware.yml"]
+    paths: ["firmware/**", ".github/workflows/firmware.yml", "!firmware/**/*.md", "!firmware/**/.gitignore"]
   workflow_dispatch:
 
 permissions:
