@@ -87,7 +87,9 @@ fault handling): [`../firmware/README.md`](../firmware/README.md#using-it).
 
 - **SWIO pull-up (WCH mode).** Rev A has no external pull-up on IO1. WCH SWIO wants about 1k to the
   target supply (PicoRVD uses 1k to 3.3 V). With U2 fitted, the TXS0108E's own ~4k pull-up and edge
-  accelerators may be enough (untested). In the 3.3 V-only build (U2 unfitted, JP1-JP8 closed) only
+  accelerators are enough: tested on a CH32V003 at 5 V that has its own 10k SWIO pull-up. Don't add
+  an external pull-up with U2 fitted; a 1k one garbled the reads (part type and read-protection
+  state changing between runs, option-byte unlock failing). In the 3.3 V-only build (U2 unfitted, JP1-JP8 closed) only
   the RP2040's ~50k internal pull-up remains, which is likely too weak. Rev A workaround for that
   build: fit 1k-4.7k from J3 pin 7 (IO1) to J3 pin 1 (VTGT). Options for rev B: a DNP 0603 pull-up
   from IO1 to VTGT for the 3.3 V-only build only (never with U2 fitted), and/or firmware that drives

@@ -3,8 +3,8 @@
 <p align="center"><img src="hardware/renders/tinylink-iso.png" alt="tinyLINK rev A, 3D render" width="600"></p>
 
 Open-hardware multi-mode debug probe on a Waveshare RP2040-Zero, with level-shifted I/O for
-3.1-5.5 V targets and switchable target power. Rev A hardware is untested; WCH flashing has been
-tested on a Raspberry Pi Pico, the other modes not yet.
+3.1-5.5 V targets and switchable target power. WCH flashing has been tested on rev A (5 V target)
+and on a Raspberry Pi Pico; the other modes not yet.
 
 | # | Mode | LED | Tools |
 |---|------|-----|-------|
@@ -32,9 +32,9 @@ until you solder its centre pad to 3v3 or to 5v, never both. See
 switch or level shifter. CI builds `tinylink-rp2040-zero.uf2` and `tinylink-pico.uf2`. See
 [Raspberry Pi Pico / picoprobe PCB](firmware/README.md#raspberry-pi-pico--picoprobe-pcb).
 
-**WCH SWIO pull-up:** SWIO wants about 1k to the target's 3.3 V. The probe only pulls the line low or
-releases it, and rev A has no pull-up fitted; see the
-[open question](hardware/README.md#open-questions-for-future-revisions).
+**WCH SWIO pull-up:** the probe only pulls SWIO low or releases it. On rev A the level shifter's own
+pull-ups are enough, so don't add one (it garbles the reads). On a plain Pico, fit about 1k from SWIO
+to 3V3. See the [open question](hardware/README.md#open-questions-for-future-revisions).
 
 MIT licence ([`LICENSE`](LICENSE)). Third-party parts keep their own licences: see
 [firmware licences](firmware/README.md#licences) and `hardware/RP2040-Zero-Kicad-Fixed`.

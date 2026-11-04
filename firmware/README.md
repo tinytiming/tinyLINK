@@ -59,8 +59,8 @@ open-drain.
 - **WCH:** SWIO for CH32V003/V00x with PicoRVD's PIO program, speaking minichlink's "ardulink" serial
   protocol. That's one USB round trip per debug register access: slower than a WCH-LinkE, fine for
   16 KB parts. minichlink's power on/off maps to target power, so it can power-cycle a locked chip.
-  The probe only pulls SWIO low or releases it, so the line relies on pull-ups (about 1k to the
-  target's 3.3 V is recommended); see the
+  The probe only pulls SWIO low or releases it, so the line relies on pull-ups: the level shifter's
+  own on rev A (add no external one), about 1k to 3V3 on a plain Pico; see the
   [SWIO pull-up note](../hardware/README.md#open-questions-for-future-revisions).
 - **UPDI:** PIO open-drain half-duplex UART on IO1. The probe echoes its own bytes like the resistor
   SerialUPDI adapter, follows the host's baud rate, parity and stop bits (including pymcuprog's
@@ -133,8 +133,8 @@ reset (the stock picoprobe firmware does the same). Leave that port idle, or use
 
 ## Not done yet
 
-- Tested so far: WCH mode on a Raspberry Pi Pico (picoprobe PCB, 1k SWIO pull-up). The other modes
-  and the tinyLINK rev A board are untested.
+- Tested so far: WCH mode on a Raspberry Pi Pico (picoprobe PCB, 1k SWIO pull-up) and on the
+  tinyLINK rev A board (5 V target, no external pull-up). The other modes are untested.
 - USB VID/PID is the pid.codes test pair 1209:0001; a public release needs its own PID (free from
   pid.codes for open hardware).
 - Not implemented: WCH RVSWD (CH32V2xx/V3xx/X0), SWO, dirtyJTAG, UART CTS/RTS flow control, LA RLE
