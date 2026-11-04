@@ -83,10 +83,17 @@ static uint32_t blink_rgb;
 static int blink_left;           // half-periods remaining
 static absolute_time_t blink_next;
 
+// A WS2812 only latches after the line idles low for >= 280 us; a word
+// pushed sooner is passed on down the (absent) chain and the LED keeps the
+// old colour. 400 us also covers the 30 us the previous word takes to clock out.
+#define LED_LATCH_US 400
+static absolute_time_t latch_done;
+
 static void put(uint32_t rgb) {
   if (rgb == shown)
     return;
   shown = rgb;
+  busy_wait_until(latch_done);
   uint32_t r = ((rgb >> 16) & 0xFF) * LED_BRIGHTNESS / 255;
   uint32_t g = ((rgb >> 8) & 0xFF) * LED_BRIGHTNESS / 255;
   uint32_t b = (rgb & 0xFF) * LED_BRIGHTNESS / 255;
@@ -96,6 +103,7 @@ static void put(uint32_t rgb) {
   uint32_t w = (g << 16) | (r << 8) | b;
 #endif
   pio_sm_put_blocking(led_pio, led_sm, w << 8);
+  latch_done = make_timeout_time_us(LED_LATCH_US);
 }
 
 void led_init(void) {
