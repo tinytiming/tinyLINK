@@ -56,7 +56,7 @@ tl() {
   if [ "$(uname)" = Darwin ]; then
     _tl_con=$(echo "$_tl_list" | awk '/console/ { print $1; exit }')
   else
-    _tl_con=$(echo "$_tl_list" | sort -t f -k 2 -n | awk 'END { print $1 }')
+    _tl_con=$(echo "$_tl_list" | sort -k 2 | awk 'END { print $1 }')
   fi
   if [ -z "$_tl_con" ]; then
     echo "no console port found" >&2
