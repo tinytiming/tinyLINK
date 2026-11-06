@@ -165,11 +165,14 @@ static void cmd_swap(const char *arg) {
     return;
   }
   bool want = !strcasecmp(arg, "on");
-  if (want != on)
-    settings_save_flags(want ? flags | SETTING_SWAP_IO01 : flags & ~SETTING_SWAP_IO01);
+  if (want == on) {
+    console_printf("IO0/IO1 swap (SWD/JTAG/WCH): already %s\r\n", on ? "on" : "off");
+    return;
+  }
+  settings_save_flags(want ? flags | SETTING_SWAP_IO01 : flags & ~SETTING_SWAP_IO01);
   console_printf("IO0/IO1 swap (SWD/JTAG/WCH): %s (saved)\r\n", want ? "on" : "off");
   // The pins are set up at mode init: reboot into the same mode to apply.
-  if (want != on && (mode_current == MODE_SWD || mode_current == MODE_JTAG || mode_current == MODE_WCH))
+  if (mode_current == MODE_SWD || mode_current == MODE_JTAG || mode_current == MODE_WCH)
     switch_mode((int)mode_current);
 }
 
@@ -227,8 +230,10 @@ static void run(char *cmd) {
     else if (!strcasecmp(arg, "off"))
       err = power_set(false);
     else if (!strcasecmp(arg, "leak on") || !strcasecmp(arg, "leak off")) {
-      err = power_allow_leak(!strcasecmp(arg, "leak on"));
-      if (!err)
+      bool want = !strcasecmp(arg, "leak on");
+      if (want == power_leak_allowed())
+        console_printf("power-on with leakage VTGT (< 2.5 V): already %s\r\n", want ? "on" : "off");
+      else if (!(err = power_allow_leak(want)))
         console_printf("power-on with leakage VTGT (< 2.5 V): %s (saved)\r\n",
                        power_leak_allowed() ? "on" : "off");
     } else
