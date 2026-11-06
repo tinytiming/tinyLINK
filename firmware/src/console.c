@@ -13,6 +13,7 @@
 #include "console.h"
 #include "led.h"
 #include "modes.h"
+#include "pinout.h"
 #include "power.h"
 #include "settings.h"
 #include "version.h"
@@ -114,7 +115,8 @@ static void print_status(void) {
 }
 
 static void print_help(void) {
-  console_puts("commands:\r\n"
+  pinout_print();
+  console_puts("\r\ncommands:\r\n"
                "  status          mode, VTGT, power\r\n"
                "  mode [N|name]   list modes, or switch (saves and re-enumerates)\r\n"
 #if TINYLINK_BOARD_PICO
@@ -124,6 +126,7 @@ static void print_help(void) {
                "  power leak on|off  allow power-on with leakage VTGT (< 2.5 V), saved\r\n"
 #endif
                "  swap on|off     exchange IO0/IO1 in SWD/JTAG/WCH, saved\r\n"
+               "  pinout          pins of the current mode\r\n"
                "  boot            reboot into the UF2 bootloader\r\n"
                "  reset           reboot\r\n");
 }
@@ -210,6 +213,8 @@ static void run(char *cmd) {
     print_help();
   else if (!strcasecmp(cmd, "mode") || !strcmp(cmd, "m"))
     cmd_mode(arg);
+  else if (!strcasecmp(cmd, "pinout"))
+    pinout_print();
   else if (!strcasecmp(cmd, "swap"))
     cmd_swap(arg);
   else if (!strcasecmp(cmd, "power") || !strcmp(cmd, "p")) {

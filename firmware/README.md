@@ -36,9 +36,14 @@ mode [N|name]   list modes, or switch
 power on|off    target power
 power leak on|off  allow power-on with leakage VTGT (< 2.5 V), saved
 swap on|off     exchange IO0/IO1 in SWD/JTAG/WCH, saved
+pinout          pins of the current mode
 boot            reboot into the UF2 bootloader
 reset           reboot
 ```
+
+`pinout` (also printed at the top of `help`) lists the signals the current mode uses, with swap applied:
+IO channel, GPIO and connector pins (2x10 header, SWD/UART JST and Cortex 10-pin on tinyLINK; Pico pin and
+picoprobe 7-pin/Cortex 10-pin headers on a Pico).
 
 Opening and closing the console at 1200 baud also reboots into the UF2 bootloader.
 

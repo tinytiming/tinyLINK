@@ -14,6 +14,7 @@ add_executable(tinylink
   src/usb_descriptors.c
   src/usbio.c
   src/console.c
+  src/pinout.c
   src/led.c
   src/button.c
   src/settings.c
