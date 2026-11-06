@@ -113,7 +113,7 @@ void wch_mode_task(void) {
   case 'p': {
     // A self-powered target is fine; only a dead VTGT is an error.
     power_set(true);
-    power_wait_on(25);
+    power_wait_on(100);
     usbio_putc(cdc_proto, power_vtgt_mv() > 1000 ? '+' : '-');
     break;
   }

@@ -18,6 +18,7 @@
 
 static char line[64];
 static size_t line_len;
+static bool prompt_shown;   // "> " is the last thing on the terminal
 
 // Waits for TX FIFO space with tud_task() only: usbio_write() would run
 // console_task() and recurse.
@@ -37,19 +38,42 @@ static void console_write(const char *p, size_t len) {
   }
 }
 
-void console_printf(const char *fmt, ...) {
-  if (cdc_console < 0 || !tud_cdc_n_connected((uint8_t)cdc_console))
-    return;
+static void console_vprintf(const char *fmt, va_list ap) {
   char buf[160];
-  va_list ap;
-  va_start(ap, fmt);
   int n = vsnprintf(buf, sizeof(buf), fmt, ap);
-  va_end(ap);
   if (n <= 0)
     return;
   if ((size_t)n >= sizeof(buf))
     n = sizeof(buf) - 1;
   console_write(buf, (size_t)n);
+}
+
+void console_printf(const char *fmt, ...) {
+  if (cdc_console < 0 || !tud_cdc_n_connected((uint8_t)cdc_console))
+    return;
+  va_list ap;
+  va_start(ap, fmt);
+  console_vprintf(fmt, ap);
+  va_end(ap);
+}
+
+static void prompt(void) {
+  console_write("> ", 2);
+  console_write(line, line_len);
+  prompt_shown = true;
+}
+
+void console_notify(const char *fmt, ...) {
+  if (cdc_console < 0 || !tud_cdc_n_connected((uint8_t)cdc_console))
+    return;
+  if (prompt_shown)
+    console_write("\r\x1b[K", 4);   // clear the prompt line
+  va_list ap;
+  va_start(ap, fmt);
+  console_vprintf(fmt, ap);
+  va_end(ap);
+  if (prompt_shown)
+    prompt();
 }
 
 // Lets queued console output reach the host before a reboot.
@@ -83,6 +107,7 @@ static void print_status(void) {
   console_printf("VTGT %d.%02d V, target power %s, level shifter %s\r\n",
                  mv / 1000, (mv % 1000) / 10, power_is_on() ? "on" : "off",
                  power_shifter_on() ? "on" : "off (VTGT < 3.1 V)");
+  console_printf("power-on with leakage VTGT (< 2.5 V): %s\r\n", power_leak_allowed() ? "on" : "off");
 }
 
 static void print_help(void) {
@@ -93,6 +118,7 @@ static void print_help(void) {
                "  power on|off    target power (not on this board)\r\n"
 #else
                "  power on|off    target power (needs JP9 bridged)\r\n"
+               "  power leak on|off  allow power-on with leakage VTGT (< 2.5 V), saved\r\n"
 #endif
                "  boot            reboot into the UF2 bootloader\r\n"
                "  reset           reboot\r\n");
@@ -166,11 +192,19 @@ static void run(char *cmd) {
     cmd_mode(arg);
   else if (!strcasecmp(cmd, "power") || !strcmp(cmd, "p")) {
     const char *err = NULL;
-    if (!strcasecmp(arg, "on"))
+    if (!strcasecmp(arg, "on")) {
       err = power_set(true);
+      if (!err)
+        power_wait_on(100);   // report the outcome before the prompt
+    }
     else if (!strcasecmp(arg, "off"))
       err = power_set(false);
-    else
+    else if (!strcasecmp(arg, "leak on") || !strcasecmp(arg, "leak off")) {
+      err = power_allow_leak(!strcasecmp(arg, "leak on"));
+      if (!err)
+        console_printf("power-on with leakage VTGT (< 2.5 V): %s (saved)\r\n",
+                       power_leak_allowed() ? "on" : "off");
+    } else
       print_status();
     if (err)
       console_printf("target power: %s\r\n", err);
@@ -197,10 +231,11 @@ void console_task(void) {
       if (!line_len && c == '\n')
         continue;
       console_printf("\r\n");
+      prompt_shown = false;
       line[line_len] = 0;
       line_len = 0;
       run(line);
-      console_printf("> ");
+      prompt();
     } else if (c == 0x7F || c == 0x08) {
       if (line_len) {
         line_len--;
@@ -222,7 +257,8 @@ void console_line_state(bool dtr, bool rts) {
     reset_usb_boot(0, 0);
   if (dtr) {
     line_len = 0;
+    prompt_shown = false;
     print_status();
-    console_printf("> ");
+    prompt();
   }
 }

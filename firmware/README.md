@@ -15,6 +15,10 @@ interfaces.
   20 ms, and while on it must not sag below 2.5 V for 3 ms. Otherwise power goes off, the LED blinks
   red twice and the console prints `target power fault: short/overload or JP9 open` (or
   `short/overload` for a sag).
+- **Leakage VTGT:** with the I/O lines active, an unpowered target can lift VTGT through its I/O
+  protection diodes (1.86 V measured on an RP235x during SWD), which blocks power-on.
+  `power leak on` (saved, off by default) allows power-on up to 2.5 V and logs the VTGT it saw. Only
+  turn it on for targets without their own supply below 2.5 V: those would be back-fed.
 - **Level shifter:** U2 (SHIFT_OE) is enabled while VTGT >= 3.1 V and disabled below 3.0 V, with
   VTGT = ADC0 × 2. With U2 fitted every mode, including the logic analyser, needs VTGT (from the
   target or probe power).
@@ -25,6 +29,7 @@ Every mode has a **console** port (the last CDC port, "tinyLINK console"), any b
 status          mode, VTGT, power, level shifter
 mode [N|name]   list modes, or switch
 power on|off    target power
+power leak on|off  allow power-on with leakage VTGT (< 2.5 V), saved
 boot            reboot into the UF2 bootloader
 reset           reboot
 ```

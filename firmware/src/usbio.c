@@ -25,7 +25,7 @@ void usbio_service(void) {
     const char *err = power_set(!power_is_on());
     if (err) {
       led_blink(RGB_RED, 2);
-      console_printf("target power: %s\r\n", err);
+      console_notify("target power: %s\r\n", err);
     } else {
       led_blink(RGB_WHITE, 1);
     }
