@@ -155,8 +155,8 @@ VTREF is 7-pin 1 / Cortex 10 pin 1 (Pico pin 34, GP28). GND is 7-pin 3, or Corte
 
 ## Not done yet
 
-- Tested so far: WCH mode on a Raspberry Pi Pico (picoprobe PCB, 1k SWIO pull-up) and on the
-  tinyLINK rev A board (5 V target, no external pull-up). The other modes are untested.
+- Tested so far: WCH and SWD, on rev A and on a Raspberry Pi Pico (picoprobe PCB). The other
+  modes are untested.
 - USB VID/PID is the pid.codes test pair 1209:0001; a public release needs its own PID (free from
   pid.codes for open hardware).
 - Not implemented: WCH RVSWD (CH32V2xx/V3xx/X0), SWO, dirtyJTAG, UART CTS/RTS flow control, LA RLE

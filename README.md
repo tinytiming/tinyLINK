@@ -3,8 +3,8 @@
 <p align="center"><img src="hardware/renders/tinylink-iso.png" alt="tinyLINK rev A, 3D render" width="600"></p>
 
 Open-hardware multi-mode debug probe on a Waveshare RP2040-Zero, with level-shifted I/O for
-3.1-5.5 V targets and switchable target power. WCH flashing has been tested on rev A (5 V target)
-and on a Raspberry Pi Pico; the other modes not yet.
+3.1-5.5 V targets and switchable target power. WCH flashing and SWD (OpenOCD) have been tested on
+rev A and on a Raspberry Pi Pico; the other modes not yet.
 
 | # | Mode | LED | Tools |
 |---|------|-----|-------|
