@@ -79,10 +79,17 @@ void tud_cdc_send_break_cb(uint8_t itf, uint16_t duration_ms) {
 
 // ---------------------------------------------------------------------------
 
+unsigned pin_swclk = PIN_IO(0);
+unsigned pin_swdio = PIN_IO(1);
+
 int main(void) {
   int saved = settings_load_mode();
   if (saved >= 0 && saved < MODE_COUNT)
     mode_current = (mode_id_t)saved;
+  if (settings_load_flags() & SETTING_SWAP_IO01) {
+    pin_swclk = PIN_IO(1);
+    pin_swdio = PIN_IO(0);
+  }
 
   // All IOs start as inputs; SHIFT_OE stays low until VTGT is present.
   for (uint i = 0; i < IO_COUNT; i++)

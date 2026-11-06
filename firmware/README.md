@@ -19,6 +19,11 @@ interfaces.
   protection diodes (1.86 V measured on an RP235x during SWD), which blocks power-on.
   `power leak on` (saved, off by default) allows power-on up to 2.5 V and logs the VTGT it saw. Only
   turn it on for targets without their own supply below 2.5 V: those would be back-fed.
+- **IO0/IO1 swap:** `swap on` (saved, off by default) exchanges IO0 and IO1 in the SWD, JTAG and WCH
+  modes, for targets wired the other way round: SWCLK/TCK goes to IO1 and SWDIO/TMS/SWIO to IO0, on
+  J1 and J3 alike (on a Pico/picoprobe PCB: the SWDCLK and SWDIO header pins). In those modes it
+  reboots to apply, which turns target power off like a mode change. UPDI, UART, LA, SPI and ISP are
+  unaffected.
 - **Level shifter:** U2 (SHIFT_OE) is enabled while VTGT >= 3.1 V and disabled below 3.0 V, with
   VTGT = ADC0 × 2. With U2 fitted every mode, including the logic analyser, needs VTGT (from the
   target or probe power).
@@ -30,6 +35,7 @@ status          mode, VTGT, power, level shifter
 mode [N|name]   list modes, or switch
 power on|off    target power
 power leak on|off  allow power-on with leakage VTGT (< 2.5 V), saved
+swap on|off     exchange IO0/IO1 in SWD/JTAG/WCH, saved
 boot            reboot into the UF2 bootloader
 reset           reboot
 ```
@@ -52,7 +58,8 @@ The protocol port is always the first CDC port: the lowest `ttyACMn` on Linux, a
 own USB serial number (`<board id>-<mode>`), so Windows keeps a driver binding per mode. CMSIS-DAP
 uses WinUSB via MS OS 2.0 descriptors, so it needs no driver install.
 
-Pins per mode: see the [channel table](../hardware/README.md#channels). PulseView names the channels
+Pins per mode: see the [channel table](../hardware/README.md#channels) (with `swap on`, IO0 and IO1 trade
+places in SWD/JTAG/WCH). PulseView names the channels
 D2-D9 after the GPIO numbers, so D2 = IO0. nRESET, the ESP32 EN/BOOT lines and the AVR RESET are
 open-drain.
 

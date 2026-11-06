@@ -14,6 +14,7 @@
 #include "led.h"
 #include "modes.h"
 #include "power.h"
+#include "settings.h"
 #include "version.h"
 
 static char line[64];
@@ -108,6 +109,8 @@ static void print_status(void) {
                  mv / 1000, (mv % 1000) / 10, power_is_on() ? "on" : "off",
                  power_shifter_on() ? "on" : "off (VTGT < 3.1 V)");
   console_printf("power-on with leakage VTGT (< 2.5 V): %s\r\n", power_leak_allowed() ? "on" : "off");
+  if (settings_load_flags() & SETTING_SWAP_IO01)
+    console_printf("IO0/IO1 swapped (SWD/JTAG/WCH)\r\n");
 }
 
 static void print_help(void) {
@@ -120,6 +123,7 @@ static void print_help(void) {
                "  power on|off    target power (needs JP9 bridged)\r\n"
                "  power leak on|off  allow power-on with leakage VTGT (< 2.5 V), saved\r\n"
 #endif
+               "  swap on|off     exchange IO0/IO1 in SWD/JTAG/WCH, saved\r\n"
                "  boot            reboot into the UF2 bootloader\r\n"
                "  reset           reboot\r\n");
 }
@@ -148,6 +152,22 @@ static void switch_mode(int i) {
 #endif
   console_drain();
   mode_select((mode_id_t)i);
+}
+
+static void cmd_swap(const char *arg) {
+  uint32_t flags = settings_load_flags();
+  bool on = flags & SETTING_SWAP_IO01;
+  if (strcasecmp(arg, "on") && strcasecmp(arg, "off")) {
+    console_printf("IO0/IO1 swap (SWD/JTAG/WCH): %s\r\n", on ? "on" : "off");
+    return;
+  }
+  bool want = !strcasecmp(arg, "on");
+  if (want != on)
+    settings_save_flags(want ? flags | SETTING_SWAP_IO01 : flags & ~SETTING_SWAP_IO01);
+  console_printf("IO0/IO1 swap (SWD/JTAG/WCH): %s (saved)\r\n", want ? "on" : "off");
+  // The pins are set up at mode init: reboot into the same mode to apply.
+  if (want != on && (mode_current == MODE_SWD || mode_current == MODE_JTAG || mode_current == MODE_WCH))
+    switch_mode((int)mode_current);
 }
 
 static void cmd_mode(const char *arg) {
@@ -190,6 +210,8 @@ static void run(char *cmd) {
     print_help();
   else if (!strcasecmp(cmd, "mode") || !strcmp(cmd, "m"))
     cmd_mode(arg);
+  else if (!strcasecmp(cmd, "swap"))
+    cmd_swap(arg);
   else if (!strcasecmp(cmd, "power") || !strcmp(cmd, "p")) {
     const char *err = NULL;
     if (!strcasecmp(arg, "on")) {

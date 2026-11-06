@@ -23,8 +23,11 @@
 #endif
 
 // Per-mode channel names, see hardware/README.md "Channels".
-#define PIN_SWCLK       PIN_IO(0)
-#define PIN_SWDIO       PIN_IO(1)
+// SWD/JTAG/WCH: IO0 = SWCLK/TCK, IO1 = SWDIO/TMS/SWIO, exchanged by
+// `swap on` (SETTING_SWAP_IO01, applied at boot in main.c).
+extern unsigned pin_swclk, pin_swdio;
+#define PIN_SWCLK       pin_swclk
+#define PIN_SWDIO       pin_swdio
 #define PIN_UART_TX     PIN_IO(2)   // UART1 TX
 #define PIN_UART_RX     PIN_IO(3)   // UART1 RX
 #define PIN_NRESET      PIN_IO(4)
@@ -35,7 +38,7 @@
 #define PIN_ESP_BOOT    PIN_IO(5)   // UART mode, host DTR
 
 #define PIN_UPDI        PIN_IO(1)
-#define PIN_SWIO        PIN_IO(1)
+#define PIN_SWIO        pin_swdio
 
 #define PIN_SPI_SCK     PIN_IO(0)   // SPI0 SCK
 #define PIN_SPI_MOSI    PIN_IO(1)   // SPI0 TX
