@@ -60,8 +60,9 @@ Opening and closing the console at 1200 baud also reboots into the UF2 bootloade
 
 The protocol port is always the first CDC port: the lowest `ttyACMn` on Linux, and
 `/dev/serial/by-id/` names ending in `-if00` (`-if01` in the CMSIS-DAP modes). Each mode has its
-own USB serial number (`<board id>-<mode>`), so Windows keeps a driver binding per mode. CMSIS-DAP
-uses WinUSB via MS OS 2.0 descriptors, so it needs no driver install.
+own USB serial number (`<board id>-<mode name>`, e.g. `E6614C30935B1329-swd`), so Windows keeps a
+driver binding per mode. CMSIS-DAP uses WinUSB via MS OS 2.0 descriptors, so it needs no driver
+install.
 
 Pins per mode: see the [channel table](../hardware/README.md#channels) (with `swap on`, IO0 and IO1 trade
 places in SWD/JTAG/WCH). PulseView names the channels

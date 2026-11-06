@@ -1,5 +1,6 @@
 // USB descriptors, built at boot from the current mode:
 //   [CMSIS-DAP v2 vendor] [CDC protocol] [CDC target UART] [CDC console]
+#include <stdio.h>
 #include <string.h>
 #include "pico/unique_id.h"
 #include "tusb.h"
@@ -50,7 +51,7 @@ static tusb_desc_device_t desc_device = {
 #define CONFIG_MAX_LEN (TUD_CONFIG_DESC_LEN + TUD_VENDOR_DESC_LEN + 3 * TUD_CDC_DESC_LEN)
 static uint8_t desc_config[CONFIG_MAX_LEN];
 
-static char serial_str[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 3];
+static char serial_str[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 6];   // "<board id>-updi"
 static char product_str[32];
 
 static const char *string_desc[STR_COUNT] = {
@@ -73,11 +74,9 @@ void usb_descriptors_init(void) {
 
   // A different serial per mode makes Windows treat each mode as its own
   // device instance instead of reusing a cached interface layout.
-  pico_get_unique_board_id_string(serial_str, sizeof(serial_str) - 2);
-  size_t n = strlen(serial_str);
-  serial_str[n] = '-';
-  serial_str[n + 1] = (char)('1' + mode_current);
-  serial_str[n + 2] = 0;
+  char board_id[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1];
+  pico_get_unique_board_id_string(board_id, sizeof(board_id));
+  snprintf(serial_str, sizeof(serial_str), "%s-%s", board_id, m->name);
 
   if (m->dap)
     strcpy(product_str, m->title);   // contains "CMSIS-DAP"
