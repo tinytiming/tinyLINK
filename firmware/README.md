@@ -45,6 +45,10 @@ reset           reboot
 IO channel, GPIO and connector pins (2x10 header, SWD/UART JST and Cortex 10-pin on tinyLINK; Pico pin and
 picoprobe 7-pin/Cortex 10-pin headers on a Pico).
 
+`tools/tinylink.sh` has shell helpers (source it from `~/.zshrc` or `~/.bashrc`): `tlport [<serial>]`
+lists a tinyLINK's ports and `tl [<serial>]` opens its console (Ctrl-D quits), on macOS and Linux.
+Without a serial they use the first tinyLINK found; a serial prefix such as the board id works in any mode.
+
 Opening and closing the console at 1200 baud also reboots into the UF2 bootloader.
 
 | # | Mode | LED | USB ports (in order) | Host tools |
