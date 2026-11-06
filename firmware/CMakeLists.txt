@@ -34,7 +34,20 @@ pico_generate_pio_header(tinylink ${CMAKE_CURRENT_LIST_DIR}/src/od_uart.pio)
 pico_generate_pio_header(tinylink ${CMAKE_CURRENT_LIST_DIR}/src/swio.pio)
 pico_generate_pio_header(tinylink ${CMAKE_CURRENT_LIST_DIR}/src/la.pio)
 
-target_include_directories(tinylink PRIVATE src third_party/free-dap)
+# version.h comes from `git describe`, regenerated on every build (rewritten
+# only when the version changes) so a new tag needs no re-configure.
+find_package(Git QUIET)
+set(TINYLINK_GENERATED ${CMAKE_CURRENT_BINARY_DIR}/generated)
+set(TINYLINK_VERSION_ARGS -DGIT=${GIT_EXECUTABLE} -DSRC=${CMAKE_CURRENT_LIST_DIR}
+    -DOUT=${TINYLINK_GENERATED}/version.h -P ${CMAKE_CURRENT_LIST_DIR}/cmake/version.cmake)
+execute_process(COMMAND ${CMAKE_COMMAND} ${TINYLINK_VERSION_ARGS})
+add_custom_target(tinylink_version
+  COMMAND ${CMAKE_COMMAND} ${TINYLINK_VERSION_ARGS}
+  BYPRODUCTS ${TINYLINK_GENERATED}/version.h
+  COMMENT "tinyLINK version from git describe")
+add_dependencies(tinylink tinylink_version)
+
+target_include_directories(tinylink PRIVATE ${TINYLINK_GENERATED} src third_party/free-dap)
 
 option(LED_ORDER_RGB "RP2040-Zero LED takes R,G,B order instead of G,R,B" OFF)
 if(LED_ORDER_RGB)

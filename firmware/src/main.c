@@ -1,6 +1,7 @@
 // tinyLINK: multi-mode debug probe firmware for the RP2040-Zero carrier
 // (../hardware). The BOOT button cycles modes, the WS2812 shows the mode,
 // a long press toggles target power.
+#include "pico/binary_info.h"
 #include "pico/stdlib.h"
 #include "hardware/watchdog.h"
 #include "tusb.h"
@@ -13,6 +14,9 @@
 #include "settings.h"
 #include "usb_descriptors.h"
 #include "usbio.h"
+#include "version.h"
+
+bi_decl(bi_program_version_string(TINYLINK_VERSION));
 
 const probe_mode_t modes[MODE_COUNT] = {
   [MODE_SWD]  = { "swd",  "tinyLINK CMSIS-DAP",          RGB_GREEN,  true,  false, true,
