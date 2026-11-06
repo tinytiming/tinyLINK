@@ -1,5 +1,5 @@
 // UART bridge mode: the target UART port plus esptool-style auto-reset.
-// Host RTS drives IO4 (target EN), host DTR drives IO5 (target IO0/BOOT),
+// Host RTS drives IO4 (target EN; IO2 on the Pico), host DTR drives IO5 (target IO0/BOOT),
 // like the usual two-transistor circuit:
 //   RTS DTR   EN    BOOT
 //    0   0   high  high

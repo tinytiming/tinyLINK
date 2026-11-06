@@ -28,13 +28,21 @@
 extern unsigned pin_swclk, pin_swdio;
 #define PIN_SWCLK       pin_swclk
 #define PIN_SWDIO       pin_swdio
+#if TINYLINK_BOARD_PICO
+// The picoprobe PCB's RESET pin is IO2 (GP4), so reset moves there and the
+// target UART TX goes to GP20 (UART1 TX, Pico pin 26, flying lead).
+#define PIN_UART_TX     20u
+#define PIN_NRESET      PIN_IO(2)
+#define PIN_ESP_EN      PIN_IO(2)   // UART mode, host RTS
+#else
 #define PIN_UART_TX     PIN_IO(2)   // UART1 TX
-#define PIN_UART_RX     PIN_IO(3)   // UART1 RX
 #define PIN_NRESET      PIN_IO(4)
+#define PIN_ESP_EN      PIN_IO(4)   // UART mode, host RTS
+#endif
+#define PIN_UART_RX     PIN_IO(3)   // UART1 RX
 #define PIN_TDO         PIN_IO(5)
 #define PIN_TDI         PIN_IO(6)
 
-#define PIN_ESP_EN      PIN_IO(4)   // UART mode, host RTS
 #define PIN_ESP_BOOT    PIN_IO(5)   // UART mode, host DTR
 
 #define PIN_UPDI        PIN_IO(1)

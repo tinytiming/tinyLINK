@@ -1,5 +1,5 @@
 // free-dap configuration for tinyLINK (bit-banged SWD/JTAG on SIO).
-// SWCLK/TCK = IO0, SWDIO/TMS = IO1, TDO = IO5, TDI = IO6, nRESET = IO4.
+// SWCLK/TCK = IO0, SWDIO/TMS = IO1, TDO = IO5, TDI = IO6, nRESET = IO4 (IO2 on the Pico).
 #ifndef _DAP_CONFIG_H_
 #define _DAP_CONFIG_H_
 
@@ -84,6 +84,12 @@ static inline void DAP_CONFIG_SETUP(void) {
     gpio_init(pins[i]);           // SIO, input, output latch low
     gpio_set_input_hysteresis_enabled(pins[i], true);
   }
+#if TINYLINK_BOARD_PICO
+  // No level shifter pull-ups here: without them a silent target leaves
+  // SWDIO floating and noise passes as data instead of a clean no-ACK.
+  gpio_pull_up(PIN_SWDIO);
+  gpio_pull_up(PIN_NRESET);
+#endif
 }
 
 static inline void DAP_CONFIG_DISCONNECT(void) {

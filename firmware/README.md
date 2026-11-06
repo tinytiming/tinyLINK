@@ -130,23 +130,23 @@ make -C build-pico -j8
 - **SWIO / UPDI:** IO1 only has the RP2040's internal pull-up here. Add 1k from SWDIO (GP3) to 3V3
   for WCH SWIO; WCH flashing was tested with that pull-up fitted.
 
-IO0-IO3 (GP2-GP5) land on the picoprobe header. The rest are only on the Pico's own pins
-(GP6 = pin 9, GP7 = pin 10, GP8 = pin 11, GP9 = pin 12), for a flying lead:
+IO0-IO3 (GP2-GP5) land on the picoprobe headers. The picoprobe PCB's RESET pin is GP4 (IO2), so on
+the Pico build nRESET/nSRST (and ESP32 EN in UART mode) sit on GP4 and the target UART TX moves to
+GP20 (Pico pin 26, flying lead). The rest are only on the Pico's own pins, for a flying lead:
 
-| Picoprobe signal (J1 / J2 pin) | GPIO | SWD | WCH | UPDI | UART | LA | SPI | JTAG | ISP |
+| Picoprobe signal (7-pin / Cortex 10) | GPIO | SWD | WCH | UPDI | UART | LA | SPI | JTAG | ISP |
 |---|---|---|---|---|---|---|---|---|---|
 | SWDCLK (2 / 4) | GP2 | SWCLK | | | | D2 | SCK | TCK | SCK |
 | SWDIO (4 / 2) | GP3 | SWDIO | SWIO | UPDI | | D3 | MOSI | TMS | MOSI |
-| ~TRST (5 / 10) | GP4 | TX | TX | TX | TX | D4 | MISO | TX | MISO |
+| RESET (5 / 10) | GP4 | nRESET | | | EN | D4 | MISO | nSRST | MISO |
 | SWO (6 / 6) | GP5 | RX | RX | RX | RX | D5 | CS | RX | |
-| Pico pin 9 | GP6 | nRESET | | | EN | D6 | | nSRST | RESET |
+| Pico pin 9 | GP6 | | | | | D6 | | | RESET |
 | Pico pin 10 | GP7 | | | | BOOT | D7 | | TDO | |
 | Pico pin 11 | GP8 | | | | | D8 | | TDI | |
 | Pico pin 12 | GP9 | | | | | D9 | | | |
+| Pico pin 26 | GP20 | TX | TX | TX | TX | | | TX | |
 
-GND is J1 pin 3, or J2 pins 3/5. On J2, pin 10 is normally the target's nRESET, and in SWD/JTAG/WCH/
-UPDI modes it carries the target UART TX: anything sent on the target-UART port then pulses the
-reset (the stock picoprobe firmware does the same). Leave that port idle, or use J1.
+VTREF is 7-pin 1 / Cortex 10 pin 1 (Pico pin 34, GP28). GND is 7-pin 3, or Cortex 10 pins 3/5.
 
 ## Not done yet
 

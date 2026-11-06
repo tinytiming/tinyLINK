@@ -1,4 +1,4 @@
-// Target UART on IO2 (TX) / IO3 (RX), hardware UART1, bridged to the
+// Target UART on IO2 (TX; GP20 on the Pico) / IO3 (RX), hardware UART1, bridged to the
 // "target UART" CDC port. RX is interrupt driven into a ring buffer so
 // fast bursts survive while a protocol mode is busy.
 #include "pico/stdlib.h"
